@@ -17,7 +17,23 @@ const Environment = () => {
     return Object.freeze({ botApiKey, chatId });
 };
 
-const Message = (event) => event.Records[0].Sns.Message;
+function getIcon(state) {
+    switch (state) {
+        case "SUCCEEDED":
+            return `✅`;
+        case "FAILED":
+            return "❗";
+        case "CANCELED":
+            return "🛑";
+        default:
+            return "ℹ️";
+    }
+}
+const Message = (event) => {
+    const pipelineEvent = JSON.parse(event.Records[0].Sns.Message);
+    const { state, pipeline } = pipelineEvent.detail;
+    return `${getIcon(state)} ${pipeline} ${state}`;
+};
 
 const isResponse = (response) => ("ok" in response)
     && (("result" in response)
@@ -51,6 +67,7 @@ async function sendMessage(env, message) {
 }
 
 const handler = async (event) => {
+    console.log(`Receive Event`, event);
     try {
         const env = Environment();
         const message = Message(event);

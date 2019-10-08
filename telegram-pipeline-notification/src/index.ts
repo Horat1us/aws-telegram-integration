@@ -3,6 +3,7 @@ import { APIGatewayProxyResult, Handler, SNSEvent } from "aws-lambda";
 
 export const handler: Handler<SNSEvent, APIGatewayProxyResult> =
     async (event: SNSEvent): Promise<APIGatewayProxyResult> => {
+        console.log(`Receive Event`, event);
         try {
             const env = utils.Environment();
             const message = utils.Message(event);
