@@ -30,7 +30,9 @@ function getIcon(state) {
     }
 }
 const Message = (event) => {
-    const pipelineEvent = JSON.parse(event.Records[0].Sns.Message);
+    const pipelineEvent = ("Records" in event)
+        ? JSON.parse(event.Records[0].Sns.Message)
+        : event;
     const { state, pipeline } = pipelineEvent.detail;
     return `${getIcon(state)} ${pipeline} ${state}`;
 };

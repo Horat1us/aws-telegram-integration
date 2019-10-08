@@ -1,4 +1,8 @@
-import { CodePipelineActionState, CodePipelineCloudWatchStageEvent, CodePipelineState, SNSEvent } from "aws-lambda";
+import {
+    CodePipelineCloudWatchStageEvent,
+    CodePipelineState,
+    SNSEvent
+} from "aws-lambda";
 
 export type Message = string | {
     toString(): string;
@@ -17,8 +21,10 @@ function getIcon(state: CodePipelineState): string {
     }
 }
 
-export const Message = (event: SNSEvent): Message => {
-    const pipelineEvent: CodePipelineCloudWatchStageEvent = JSON.parse(event.Records[ 0 ].Sns.Message);
+export const Message = (event: SNSEvent | CodePipelineCloudWatchStageEvent): Message => {
+    const pipelineEvent: CodePipelineCloudWatchStageEvent = ("Records" in event)
+        ? JSON.parse(event.Records[ 0 ].Sns.Message)
+        : event;
     const { state, pipeline } = pipelineEvent.detail;
     return `${getIcon(state)} ${pipeline} ${state}`;
 };
